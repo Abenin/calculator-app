@@ -1,26 +1,18 @@
-name: CI Pipeline
- 
-on:
-  push:
+name: CI                           # The workflow’s name (you'll see it in the Actions tab)
+
+on:                                # When to trigger the workflow
+  pull_request:                    # Runs for every PR (feature → main)
+  push:                            # And for direct pushes to main
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
- 
-jobs:
+
+jobs:                              # A workflow can have multiple jobs; we have one called "test"
   test:
-    runs-on: ubuntu-latest
- 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
- 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
- 
-    - name: Install dependencies
-      run: pip install pytest
- 
-    - name: Run tests
-      run: pytest
+    runs-on: ubuntu-latest         # GitHub spins up a clean Linux VM for this job
+    steps:                         # Steps run in order; any step failing stops the job
+      - uses: actions/checkout@v4  # 1) Pulls your repo code into the VM
+      - uses: actions/setup-python@v5   # 2) Installs Python into the VM
+        with:
+          python-version: "3.11"
+      - run: python -m pip install -r requirements.txt   # 3) Install test deps (pytest)
+      - run: pytest -q                 # 4) Run tests; exit code decides pass/fail
+
